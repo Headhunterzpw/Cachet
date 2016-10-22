@@ -7,8 +7,8 @@
     <meta name="env" content="{{ app('env') }}">
     <meta name="token" content="{{ csrf_token() }}">
 
-    <link rel="alternate" type="application/atom+xml" href="/atom" title="{{ $site_title }} - Atom Feed">
-    <link rel="alternate" type="application/rss+xml" href="/rss" title="{{ $site_title }} - RSS Feed">
+    <link rel="alternate" type="application/atom+xml" href="{{ cachet_route('feed.atom') }}" title="{{ $site_title }} - Atom Feed">
+    <link rel="alternate" type="application/rss+xml" href="{{ cachet_route('feed.rss') }}" title="{{ $site_title }} - RSS Feed">
 
     <!-- Mobile friendliness -->
     <meta name="HandheldFriendly" content="True">
@@ -49,7 +49,7 @@
     @if($enable_external_dependencies)
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&subset={{ $font_subset }}" rel="stylesheet" type="text/css">
     @endif
-    <link rel="stylesheet" href="{{ elixir('dist/css/all.css') }}">
+    <link rel="stylesheet" href="{{ elixir('dist/css/app.css') }}">
 
     @include('partials.stylesheet')
 

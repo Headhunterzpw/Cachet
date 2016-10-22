@@ -11,6 +11,12 @@
 
 namespace CachetHQ\Cachet\Bus\Commands\Incident;
 
+/**
+ * This is the report incident command.
+ *
+ * @author Joseph Cohen <joe@alt-three.com>
+ * @author James Brooks <james@alt-three.com>
+ */
 final class ReportIncidentCommand
 {
     /**
@@ -63,6 +69,13 @@ final class ReportIncidentCommand
     public $notify;
 
     /**
+     * Whether to stick the incident on top.
+     *
+     * @var bool
+     */
+    public $stickied;
+
+    /**
      * The date at which the incident occurred.
      *
      * @var string|null
@@ -91,13 +104,14 @@ final class ReportIncidentCommand
     public $rules = [
         'name'             => 'required|string',
         'status'           => 'required|int|min:0|max:4',
-        'message'          => 'string',
-        'visible'          => 'bool',
-        'component_id'     => 'int|required_with:component_status',
-        'component_status' => 'int|min:1|max:4|required_with:component_id',
-        'notify'           => 'bool',
-        'incident_date'    => 'string',
-        'template'         => 'string',
+        'message'          => 'required|string',
+        'visible'          => 'nullable|bool',
+        'component_id'     => 'nullable|required_with:component_status|int',
+        'component_status' => 'nullable|required_with:component_id|int|min:1|max:4',
+        'notify'           => 'nullable|bool',
+        'stickied'         => 'required|bool',
+        'incident_date'    => 'nullable|string',
+        'template'         => 'nullable|string',
     ];
 
     /**
@@ -110,13 +124,14 @@ final class ReportIncidentCommand
      * @param int         $component_id
      * @param int         $component_status
      * @param bool        $notify
+     * @param bool        $stickied
      * @param string|null $incident_date
      * @param string|null $template
-     * @param array|null  $template_vars
+     * @param array       $template_vars
      *
      * @return void
      */
-    public function __construct($name, $status, $message, $visible, $component_id, $component_status, $notify, $incident_date, $template, array $template_vars = null)
+    public function __construct($name, $status, $message, $visible, $component_id, $component_status, $notify, $stickied, $incident_date, $template, array $template_vars = [])
     {
         $this->name = $name;
         $this->status = $status;
@@ -125,6 +140,7 @@ final class ReportIncidentCommand
         $this->component_id = $component_id;
         $this->component_status = $component_status;
         $this->notify = $notify;
+        $this->stickied = $stickied;
         $this->incident_date = $incident_date;
         $this->template = $template;
         $this->template_vars = $template_vars;

@@ -19,6 +19,7 @@ use GrahamCampbell\Binput\Facades\Binput;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -43,49 +44,55 @@ class SettingsController extends Controller
         $this->subMenu = [
             'setup' => [
                 'title'  => trans('dashboard.settings.app-setup.app-setup'),
-                'url'    => route('dashboard.settings.setup'),
+                'url'    => cachet_route('dashboard.settings.setup'),
                 'icon'   => 'ion-gear-b',
                 'active' => false,
             ],
             'theme' => [
                 'title'  => trans('dashboard.settings.theme.theme'),
-                'url'    => route('dashboard.settings.theme'),
+                'url'    => cachet_route('dashboard.settings.theme'),
                 'icon'   => 'ion-paintbrush',
                 'active' => false,
             ],
             'stylesheet' => [
                 'title'  => trans('dashboard.settings.stylesheet.stylesheet'),
-                'url'    => route('dashboard.settings.stylesheet'),
+                'url'    => cachet_route('dashboard.settings.stylesheet'),
                 'icon'   => 'ion-paintbucket',
                 'active' => false,
             ],
             'customization' => [
                 'title'  => trans('dashboard.settings.customization.customization'),
-                'url'    => route('dashboard.settings.customization'),
+                'url'    => cachet_route('dashboard.settings.customization'),
                 'icon'   => 'ion-wand',
                 'active' => false,
             ],
             'localization' => [
                 'title'  => trans('dashboard.settings.localization.localization'),
-                'url'    => route('dashboard.settings.localization'),
+                'url'    => cachet_route('dashboard.settings.localization'),
                 'icon'   => 'ion-earth',
                 'active' => false,
             ],
             'security' => [
                 'title'  => trans('dashboard.settings.security.security'),
-                'url'    => route('dashboard.settings.security'),
+                'url'    => cachet_route('dashboard.settings.security'),
                 'icon'   => 'ion-lock-combination',
                 'active' => false,
             ],
             'analytics' => [
                 'title'  => trans('dashboard.settings.analytics.analytics'),
-                'url'    => route('dashboard.settings.analytics'),
+                'url'    => cachet_route('dashboard.settings.analytics'),
                 'icon'   => 'ion-stats-bars',
+                'active' => false,
+            ],
+            'log' => [
+                'title'  => trans('dashboard.settings.log.log'),
+                'url'    => cachet_route('dashboard.settings.log'),
+                'icon'   => 'ion-document-text',
                 'active' => false,
             ],
             'credits' => [
                 'title'  => trans('dashboard.settings.credits.credits'),
-                'url'    => route('dashboard.settings.credits'),
+                'url'    => cachet_route('dashboard.settings.credits'),
                 'icon'   => 'ion-ios-list',
                 'active' => false,
             ],
@@ -193,7 +200,7 @@ class SettingsController extends Controller
     {
         $this->subMenu['security']['active'] = true;
 
-        $unsecureUsers = User::whereNull('google_2fa_secret')->orWhere('google_2fa_secret', '')->get();
+        $unsecureUsers = User::whereNull('google_2fa_secret')->orWhere('google_2fa_secret', '=', '')->get();
 
         Session::flash('redirect_to', $this->subMenu['security']['url']);
 
@@ -241,6 +248,22 @@ class SettingsController extends Controller
             ->withBackers($backers)
             ->withContributors($contributors)
             ->withSubMenu($this->subMenu);
+    }
+
+    /**
+     * Show the most recent log.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showLogView()
+    {
+        $this->subMenu['log']['active'] = true;
+
+        $log = Log::getMonolog();
+
+        $logContents = file_get_contents($log->getHandlers()[0]->getUrl());
+
+        return View::make('dashboard.settings.log')->withLog($logContents)->withSubMenu($this->subMenu);
     }
 
     /**
